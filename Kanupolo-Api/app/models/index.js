@@ -15,6 +15,8 @@ db.sequelize = sequelize;
 db.user = require("./user.model.js")(sequelize, Sequelize);
 db.role = require("./role.model.js")(sequelize, Sequelize);
 db.pass = require("./pass.model.js")(sequelize, Sequelize);
+db.verein = require("./verein.model.js")(sequelize, Sequelize);
+db.verband = require("./verband.model.js")(sequelize, Sequelize);
 
 //call associate method of each model if it exists
 Object.keys(db).forEach((modelName) => {
