@@ -33,6 +33,7 @@ app.get("/", (req, res) => {
   res.json({ message: "API is running." });
 });
 
+require("./app/routes/user.routes")(app);
 require("./app/routes/pass.routes")(app);
 require("./app/routes/verein.routes")(app);
 require("./app/routes/verband.routes")(app);

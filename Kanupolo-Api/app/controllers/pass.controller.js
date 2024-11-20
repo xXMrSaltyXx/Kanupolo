@@ -32,6 +32,46 @@ exports.create = (req, res) => {
         });
 };
 
+// Connect a Pass to a User
+exports.connectToUser = (req, res) => {
+    const passId = req.params.id;
+    const userId = req.body.userId;
+
+    if (!userId) {
+        res.status(400).send({
+            message: "User ID can not be empty!"
+        });
+        return;
+    }
+
+    Pass.findByPk(passId)
+        .then(pass => {
+            if (!pass) {
+                res.status(404).send({
+                    message: `Cannot find Pass with id=${passId}.`
+                });
+                return;
+            }
+
+            pass.setUser(userId)
+                .then(() => {
+                    res.send({
+                        message: `Pass was connected to User with id=${userId} successfully.`
+                    });
+                })
+                .catch(err => {
+                    res.status(500).send({
+                        message: err.message || "Error connecting Pass to User."
+                    });
+                });
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: err.message || "Error retrieving Pass with id=" + passId
+            });
+        });
+};
+
 // Retrieve all Passes from the database.
 exports.findAll = async (req, res) => {
     const { page, size, condition } = req.query;

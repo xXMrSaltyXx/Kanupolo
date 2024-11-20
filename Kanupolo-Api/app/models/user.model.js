@@ -3,9 +3,6 @@ module.exports = (sequelize, Sequelize) => {
         username: {
             type: Sequelize.STRING
         },
-        email: {
-            type: Sequelize.STRING
-        },
         password: {
             type: Sequelize.STRING
         }
@@ -16,7 +13,8 @@ module.exports = (sequelize, Sequelize) => {
             foreignKey: "roleId"
         });
         User.belongsTo(models.pass, {
-            foreignKey: 'passId'
+            foreignKey: 'passId',
+            allowNull: true
         });
     };
   

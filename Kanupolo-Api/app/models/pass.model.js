@@ -23,6 +23,7 @@ module.exports = (sequelize, Sequelize) => {
     Pass.associate = function(models) {
         Pass.hasOne(models.user, {
             foreignKey: 'passId',
+            allowNull: true
         });
         Pass.belongsTo(models.verein, {
             foreignKey: 'vereinId'
