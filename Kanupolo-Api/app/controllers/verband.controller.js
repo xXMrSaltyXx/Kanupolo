@@ -1,5 +1,6 @@
 const db = require('../models');
 const Verband = db.verband;
+const { getPagination, getPagingData } = require('../utils/pagination');
 const Op = require('sequelize').Op;
 
 // Create and Save a new Verband
@@ -26,48 +27,33 @@ exports.create = (req, res) => {
         });
 };
 
-const getPagination = (page, size) => {
-    const limit = size ? +size : 3;
-    const offset = page ? page * limit : 0;
-  
-    return { limit, offset };
-};
-
-const getPagingData = (data, page, limit) => {
-    const { count: totalItems, rows: verbands } = data;
-    const currentPage = page ? +page : 0;
-    const totalPages = Math.ceil(totalItems / limit);
-
-    return { totalItems, verbands, totalPages, currentPage };
-};
-
 // Retrieve all Verbands from the database.
-exports.findAll = (req, res) => {
-    const { page, size, name } = req.query;
-    let condition = {};
-    
-    const conditionsMap = {
-        name: { [Op.like]: `%${name}%` }
-    };
-    
-    Object.entries(conditionsMap).forEach(([key, value]) => {
-        if (req.query[key]) {
-            condition[key] = value;
+exports.findAll = async (req, res) => {
+    const { page, size, condition } = req.query;
+    let queryCondition = {};
+
+    if (condition) {
+        try {
+            queryCondition = JSON.parse(condition);
+        } catch (error) {
+            return res.status(400).send({
+                message: "Invalid condition format!"
+            });
         }
-    });
+    }
 
     const { limit, offset } = getPagination(page, size);
-    
-    Verband.findAndCountAll({ limit, offset })
-        .then(data => {
-            const response = getPagingData(data, page, limit);
-            res.send(response);
-        })
-        .catch(err => {
-            res.status(500).send({
-                message: err.message || "Some error occurred while retrieving verbands."
-            });
+
+    try {
+        const data = await Verband.findAndCountAll({ where: queryCondition, limit, offset });
+        const response = getPagingData(data, page, limit);
+        res.send(response);
+    } catch (err) {
+        console.error("Error retrieving verbands:", err); // Log the detailed error
+        res.status(500).send({
+            message: "An error occurred while retrieving verbands."
         });
+    }
 };
 
 // Find a single Verband with an id

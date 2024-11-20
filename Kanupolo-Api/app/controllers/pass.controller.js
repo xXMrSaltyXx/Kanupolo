@@ -1,5 +1,6 @@
 const db = require('../models');
 const Pass = db.pass;
+const { getPagination, getPagingData } = require('../utils/pagination');
 const Op = require('sequelize').Op;
 
 // Create and Save a new Pass
@@ -31,54 +32,34 @@ exports.create = (req, res) => {
         });
 };
 
-const getPagination = (page, size) => {
-    const limit = size ? +size : 3;
-    const offset = page ? page * limit : 0;
-  
-    return { limit, offset };
-};
-
-const getPagingData = (data, page, limit) => {
-    const { count: totalItems, rows: passes } = data;
-    const currentPage = page ? +page : 0;
-    const totalPages = Math.ceil(totalItems / limit);
-
-    return { totalItems, passes, totalPages, currentPage };
-}; 
-
 // Retrieve all Passes from the database.
-exports.findAll = (req, res) => {
-    const { page, size, firstname, lastname, birthdate, passNumber, approvalDate, joinDate, vereinId } = req.query;
-    let condition = {};
-    
-    const conditionsMap = {
-        firstname: { [Op.iLike]: `%${firstname}%` },
-        lastname: { [Op.iLike]: `%${lastname}%` },
-        birthdate: { [Op.eq]: birthdate },
-        passNumber: { [Op.iLike]: `%${passNumber}%` },
-        approvalDate: { [Op.eq]: approvalDate },
-        joinDate: { [Op.eq]: joinDate },
-        vereinId: { [Op.eq]: vereinId }
-    };
-    
-    Object.entries(conditionsMap).forEach(([key, value]) => {
-        if (req.query[key]) {
-            condition[key] = value;
+exports.findAll = async (req, res) => {
+    const { page, size, condition } = req.query;
+    let queryCondition = {};
+
+    if (condition) {
+        try {
+            queryCondition = JSON.parse(condition);
+        } catch (error) {
+            res.status(400).send({
+                message: "Invalid condition format!"
+            });
+            return;
         }
-    });
+    }
 
     const { limit, offset } = getPagination(page, size);
 
-    Pass.findAndCountAll({ limit, offset, where: condition })
-        .then(data => {
-            const response = getPagingData(data, page, limit);
-            res.send(response);
-        })
-        .catch(err => {
-            res.status(500).send({
-                message: err.message || "Some error occurred while retrieving passes."
-            });
+    try {
+        const data = await Pass.findAndCountAll({ where: queryCondition, limit, offset });
+        const response = getPagingData(data, page, limit);
+        res.send(response);
+    } catch (err) {
+        console.error("Error retrieving passes:", err); // Log the detailed error
+        res.status(500).send({
+            message: "An error occurred while retrieving passes."
         });
+    }
 };
 
 // Find a single Pass with an id

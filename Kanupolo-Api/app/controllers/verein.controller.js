@@ -1,5 +1,6 @@
 const db = require('../models');
 const Verein = db.verein;
+const { getPagination, getPagingData } = require('../utils/pagination');
 const Op = require('sequelize').Op;
 
 // Create and Save a new Verein
@@ -26,49 +27,34 @@ exports.create = (req, res) => {
         });
 };
 
-const getPagination = (page, size) => {
-    const limit = size ? +size : 3;
-    const offset = page ? page * limit : 0;
-  
-    return { limit, offset };
-};
-
-const getPagingData = (data, page, limit) => {
-    const { count: totalItems, rows: vereins } = data;
-    const currentPage = page ? +page : 0;
-    const totalPages = Math.ceil(totalItems / limit);
-
-    return { totalItems, vereins, totalPages, currentPage };
-};
-
 // Retrieve all Vereins from the database.
-exports.findAll = (req, res) => {
-    const { page, size, name, verbandId } = req.query;
-    let condition = {};
-    
-    const conditionsMap = {
-        name: { [Op.like]: `%${name}%` },
-        verbandId: { [Op.eq]: verbandId }
-    };
-    
-    Object.entries(conditionsMap).forEach(([key, value]) => {
-        if (req.query[key]) {
-            condition[key] = value;
+exports.findAll = async (req, res) => {
+    const { page, size, condition } = req.query;
+    let queryCondition = {};
+
+    if (condition) {
+        try {
+            queryCondition = JSON.parse(condition);
+        } catch (error) {
+            res.status(400).send({
+                message: "Invalid condition format!"
+            });
+            return;
         }
-    });
+    }
 
     const { limit, offset } = getPagination(page, size);
 
-    Verein.findAndCountAll({ limit, offset, where: condition })
-        .then(data => {
-            const response = getPagingData(data, page, limit);
-            res.send(response);
-        })
-        .catch(err => {
-            res.status(500).send({
-                message: err.message || "Some error occurred while retrieving vereins."
-            });
+    try {
+        const data = await Verein.findAndCountAll({ where: queryCondition, limit, offset });
+        const response = getPagingData(data, page, limit);
+        res.send(response);
+    } catch (err) {
+        console.error("Error retrieving vereins:", err); // Log the detailed error
+        res.status(500).send({
+            message: "An error occurred while retrieving vereins."
         });
+    }
 };
 
 // Find a single Verein with an id
