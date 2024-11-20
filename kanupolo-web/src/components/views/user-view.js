@@ -3,17 +3,12 @@ import React, { Component } from 'react';
 class UserView extends Component {
     constructor(props) {
         super(props);
-        // OnChange event handler
-        // this.onChangeUsername = this.onChangeUsername.bind(this);
-        // this.saveUser = this.saveUser.bind(this);
 
         this.state = {
-
+            users: [],
+            currentUser: null,
         };
     }
-
-    // onChangeUsername(e) {}
-    // saveUser() {}
 
     render() {
         return (
