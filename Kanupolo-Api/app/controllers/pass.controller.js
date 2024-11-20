@@ -1,10 +1,10 @@
-const db = require('../models/index');
-const Pass = require('../models/pass.model');
+const db = require('../models');
+const Pass = db.pass;
 const Op = require('sequelize').Op;
 
 // Create and Save a new Pass
 exports.create = (req, res) => {
-    if (!req.body.name) {
+    if (!req.body.firstname || !req.body.lastname || !req.body.birthdate || !req.body.passNumber || !req.body.approvalDate || !req.body.joinDate) {
         res.status(400).send({
             message: "Content can not be empty!"
         });
@@ -12,9 +12,13 @@ exports.create = (req, res) => {
     }
 
     const pass = {
-        name: req.body.name,
-        description: req.body.description
-    };
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        birthdate: req.body.birthdate,
+        passNumber: req.body.passNumber,
+        approvalDate: req.body.approvalDate,
+        joinDate: req.body.joinDate
+    }
 
     Pass.create(pass)
         .then(data => {
@@ -27,29 +31,48 @@ exports.create = (req, res) => {
         });
 };
 
-// Retrieve all Passes from the database.
-exports.findAll = (req, res) => {
-    const name = req.query.name;
-    let condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
-
-    Pass.findAll({ where: condition })
-        .then(data => {
-            res.send(data);
-        })
-        .catch(err => {
-            res.status(500).send({
-                message: err.message || "Some error occurred while retrieving passes."
-            });
-        });
+const getPagination = (page, size) => {
+    const limit = size ? +size : 3;
+    const offset = page ? page * limit : 0;
+  
+    return { limit, offset };
 };
 
-// Retrive all Passes from a specific Verein
-exports.findAllFromVerein = (req, res) => {
-    const vereinId = req.params.vereinId;
+const getPagingData = (data, page, limit) => {
+    const { count: totalItems, rows: passes } = data;
+    const currentPage = page ? +page : 0;
+    const totalPages = Math.ceil(totalItems / limit);
 
-    Pass.findAll({ where: { vereinId: vereinId } })
+    return { totalItems, passes, totalPages, currentPage };
+}; 
+
+// Retrieve all Passes from the database.
+exports.findAll = (req, res) => {
+    const { page, size, firstname, lastname, birthdate, passNumber, approvalDate, joinDate, vereinId } = req.query;
+    let condition = {};
+    
+    const conditionsMap = {
+        firstname: { [Op.iLike]: `%${firstname}%` },
+        lastname: { [Op.iLike]: `%${lastname}%` },
+        birthdate: { [Op.eq]: birthdate },
+        passNumber: { [Op.iLike]: `%${passNumber}%` },
+        approvalDate: { [Op.eq]: approvalDate },
+        joinDate: { [Op.eq]: joinDate },
+        vereinId: { [Op.eq]: vereinId }
+    };
+    
+    Object.entries(conditionsMap).forEach(([key, value]) => {
+        if (req.query[key]) {
+            condition[key] = value;
+        }
+    });
+
+    const { limit, offset } = getPagination(page, size);
+
+    Pass.findAndCountAll({ limit, offset, where: condition })
         .then(data => {
-            res.send(data);
+            const response = getPagingData(data, page, limit);
+            res.send(response);
         })
         .catch(err => {
             res.status(500).send({

@@ -16,22 +16,26 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const db = require("./app/models");
-// db.sequelize.sync()
-//   .then(() => {
-//     console.log("Synced db.");
-//   })
-//   .catch((err) => {
-//     console.log("Failed to sync db: " + err.message);
-//   });
+db.sequelize.sync()
+  .then(() => {
+    console.log("Synced db.");
+  })
+  .catch((err) => {
+    console.log("Failed to sync db: " + err.message);
+  });
 
-db.sequelize.sync({ force: true }).then(() => {
-    console.log("Drop and re-sync db.");
-});
+// db.sequelize.sync({ force: true }).then(() => {
+//     console.log("Drop and re-sync db.");
+// });
 
 // simple route
 app.get("/", (req, res) => {
   res.json({ message: "API is running." });
 });
+
+require("./app/routes/pass.routes")(app);
+require("./app/routes/verein.routes")(app);
+require("./app/routes/verband.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
