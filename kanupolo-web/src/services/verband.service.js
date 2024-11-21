@@ -27,4 +27,5 @@ class VerbandDataService {
 
 }
 
-export default new VerbandDataService();
+var verbandDataService = new VerbandDataService();
+export default verbandDataService;

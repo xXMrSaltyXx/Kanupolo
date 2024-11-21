@@ -5,6 +5,10 @@ class UserDataService {
         return http.get(`/users?page=${page}&size=${size}&condition=${condition}`);
     }
 
+    getAllWithRoleAndPass(page, size, condition) {
+        return http.get(`/users/role-pass?page=${page}&size=${size}&condition=${condition}`);
+    }
+
     get(id) {
         return http.get(`/users/${id}`);
     }
@@ -26,4 +30,5 @@ class UserDataService {
     }
 }
 
-export default new UserDataService();
+var userDataService = new UserDataService();
+export default userDataService;
