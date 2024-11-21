@@ -1,12 +1,13 @@
 const db = require('../models');
 const { getPagination, getPagingData } = require('../utils/pagination');
 const Op = require('sequelize').Op;
+const crypto = require('crypto');
 
 const User = db.user;
 
 // Create and Save a new User
 exports.create = (req, res) => {
-    if (!req.body.username || !req.body.password) {
+    if (!req.body.username || !req.body.password || !req.body.roleId) {
         res.status(400).send({
             message: "Content can not be empty!"
         });
@@ -15,8 +16,9 @@ exports.create = (req, res) => {
 
     const user = {
         username: req.body.username,
-        password: req.body.password,
-        roleId: req.body.roleId
+        password: crypto.createHash('sha256').update(req.body.password).digest('hex'),
+        roleId: req.body.roleId,
+        passId: req.body.passId
     };
 
     User.create(user)
@@ -24,8 +26,9 @@ exports.create = (req, res) => {
             res.send(data);
         })
         .catch(err => {
+            console.error("Error creating user:", err)
             res.status(500).send({
-                message: err.message || "Some error occurred while creating the User."
+                message: "Some error occurred while creating the User."
             });
         });
 };
@@ -49,7 +52,12 @@ exports.findAll = async (req, res) => {
     const { limit, offset } = getPagination(page, size);
 
     try {
-        const data = await User.findAndCountAll({ where: queryCondition, limit, offset });
+        const data = await User.findAndCountAll({
+            attributes: { exclude: ['password'] },
+            where: queryCondition,
+            limit,
+            offset
+        });
         const response = getPagingData(data, page, limit);
         res.send(response);
     } catch (err) {
@@ -60,11 +68,60 @@ exports.findAll = async (req, res) => {
     }
 };
 
+// Retrieve all Users with their roles and passnumber from the database.
+exports.findAllWithRolesAndPassnumber = async (req, res) => {
+    const { page, size, condition } = req.query;
+    let queryCondition = {};
+
+    if (condition) {
+        try {
+            queryCondition = JSON.parse(condition);
+        } catch (error) {
+            res.status(400).send({
+                message: "Invalid condition format!"
+            });
+            return;
+        }
+    }
+
+    const { limit, offset } = getPagination(page, size);
+
+    try {
+        const data = await User.findAndCountAll({
+            attributes: { exclude: ['password'] },
+            include: [
+                {
+                    model: db.role,
+                    as: 'role',
+                    attributes: ['name']
+                },
+                {
+                    model: db.pass,
+                    as: 'pass',
+                    attributes: ['passNumber']
+                }
+            ],
+            where: queryCondition,
+            limit,
+            offset
+        });
+        const response = getPagingData(data, page, limit);
+        res.send(response);
+    } catch (err) {
+        console.error("Error retrieving users with roles and passnumber:", err);
+        res.status(500).send({
+            message: "An error occurred while retrieving users with roles and passnumber."
+        });
+    }
+};
+
 // Find a single User with an id
 exports.findOne = (req, res) => {
     const id = req.params.id;
 
-    User.findByPk(id)
+    User.findByPk(id, {
+        attributes: { exclude: ['password'] }
+    })
         .then(data => {
             if (data) {
                 res.send(data);

@@ -34,6 +34,7 @@ app.get("/", (req, res) => {
 });
 
 require("./app/routes/user.routes")(app);
+require("./app/routes/role.routes")(app);
 require("./app/routes/pass.routes")(app);
 require("./app/routes/verein.routes")(app);
 require("./app/routes/verband.routes")(app);
