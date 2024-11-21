@@ -20,7 +20,7 @@ const VereinList = () => {
     });
 
     const retrieveVereins = () => {
-        VereinDataService.getAllConditionPagionation(page, size)
+        VereinDataService.getAllPagionation(page, size)
             .then(response => {
                 setVereins(response.data.items);
             })

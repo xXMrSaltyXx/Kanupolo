@@ -15,7 +15,7 @@ const RoleList = () => {
     const [editFields, setEditFields] = useState({ name: '' });
 
     const retrieveRoles = () => {
-        RoleDataService.getAllConditionPagionation(page, size)
+        RoleDataService.getAllPagionation(page, size)
             .then(response => {
                 setRoles(response.data.items);
             })

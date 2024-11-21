@@ -1,12 +1,20 @@
 import http from "../http-common";
 
 class UserDataService {
-    getAllConditionPagionation(page, size, condition) {
-        return http.get(`/users?page=${page}&size=${size}&condition=${condition}`);
+    getAllPagionation(page, size) {
+        return http.get(`/users?page=${page}&size=${size}`);
+    }
+
+    getAllWithoutPagination() {
+        return http.get(`/users/without-pagination`);
     }
 
     getAllWithRoleAndPass(page, size) {
         return http.get(`/users/role-pass?page=${page}&size=${size}`);
+    }
+
+    getUserData(id) {
+        return http.get(`/users/user-data/${id}`);
     }
 
     get(id) {

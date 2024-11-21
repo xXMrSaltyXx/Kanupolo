@@ -17,7 +17,7 @@ const VerbandList = () => {
     const [editFields, setEditFields] = useState({ name: '' });
 
     const retrieveVerbands = () => {
-        VerbandDataService.getAllConditionPagionation(page, size)
+        VerbandDataService.getAllPagionation(page, size)
             .then(response => {
                 setVerbands(response.data.items);
             })

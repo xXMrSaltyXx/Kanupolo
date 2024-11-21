@@ -1,8 +1,12 @@
 import http from "../http-common";
 
 class RoleDataService {
-    getAllConditionPagionation(page, size) {
+    getAllPagionation(page, size) {
         return http.get(`/roles?page=${page}&size=${size}`);
+    }
+
+    getAllWithoutPagination() {
+        return http.get("/roles/without-pagination");
     }
 
     get(id) {

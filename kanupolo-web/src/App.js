@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link, Route, Routes } from 'react-router-dom';
 import { Nav } from 'react-bootstrap';
 import AppView from './components/views/app-view';
-import UserView from './components/views/user-view';
+import UserView from './components/views/user-view/user-view';
 import VereinView from './components/views/verein-view';
 import VerbandView from './components/views/verband-view';
 import AdminView from './components/views/admin-view';

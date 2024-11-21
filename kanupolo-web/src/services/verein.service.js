@@ -1,12 +1,12 @@
 import http from "../http-common";
 
 class VereinDataService {
-    getAll() {
-        return http.get("/vereins");
+    getAllPagionation(page, size) {
+        return http.get(`/vereins?page=${page}&size=${size}`);
     }
 
-    getAllConditionPagionation(page, size) {
-        return http.get(`/vereins?page=${page}&size=${size}`);
+    getAllWithoutPagination() {
+        return http.get("/vereins/without-pagination");
     }
 
     get(id) {

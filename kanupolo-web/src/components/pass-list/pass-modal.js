@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Form, Button } from 'react-bootstrap';
+import Select from 'react-select';
+import VereinDataService from '../../services/verein.service';
 
 const PassModal = ({ show, handleClose, handleSave, initialData }) => {
     const [formFields, setFormFields] = useState({
@@ -8,8 +10,10 @@ const PassModal = ({ show, handleClose, handleSave, initialData }) => {
         birthdate: '',
         passNumber: '',
         approvalDate: '',
+        vereinId: null,
         joinDate: ''
     });
+    const [vereinOptions, setVereinOptions] = useState([]);
 
     const handleChange = (e, field) => {
         const { value } = e.target;
@@ -24,6 +28,27 @@ const PassModal = ({ show, handleClose, handleSave, initialData }) => {
             setFormFields(initialData);
         }
     }, [initialData]);
+
+    useEffect(() => {
+        // Fetch or set initial vereinOptions here
+        const fetchVereinOptions = async () => {
+            // Replace with your data fetching logic
+            const options = (await VereinDataService.getAllWithoutPagination()).data.map(verein => ({
+                value: verein.id,
+                label: verein.name
+            }));
+            setVereinOptions(options);
+        };
+
+        fetchVereinOptions();
+    }, []);
+
+    const handleVereinChange = (selectedOption) => {
+        setFormFields(prevState => ({
+            ...prevState,
+            vereinId: selectedOption ? selectedOption.value : null
+        }));
+    };
 
     const onSave = () => {
         handleSave(formFields);
@@ -85,6 +110,15 @@ const PassModal = ({ show, handleClose, handleSave, initialData }) => {
                             type="date"
                             value={formFields.joinDate}
                             onChange={(e) => handleChange(e, 'joinDate')}
+                        />
+                    </Form.Group>
+                    <Form.Group controlId="formVerein">
+                        <Form.Label>Verein</Form.Label>
+                        <Select
+                            value={vereinOptions.find(option => option.value === formFields.vereinId)}
+                            options={vereinOptions}
+                            onChange={handleVereinChange}
+                            placeholder="Verein auswählen"
                         />
                     </Form.Group>
                 </Form>

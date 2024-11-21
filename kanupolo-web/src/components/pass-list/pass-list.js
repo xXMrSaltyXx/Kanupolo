@@ -19,11 +19,12 @@ const PassList = () => {
         birthdate: '',
         passNumber: '',
         approvalDate: '',
+        vereinId: null,
         joinDate: ''
     });
 
     const retrievePasses = () => {
-        PassDataService.getAllConditionPagionation(page, size)
+        PassDataService.getAllPagionation(page, size)
             .then(response => {
                 setPasses(response.data.items);
             })
@@ -44,6 +45,7 @@ const PassList = () => {
             birthdate: '',
             passNumber: '',
             approvalDate: '',
+            vereinId: null,
             joinDate: ''
         });
         setShowModal(true);
@@ -58,6 +60,7 @@ const PassList = () => {
                 birthdate: passes[selectedIndex].birthdate,
                 passNumber: passes[selectedIndex].passNumber,
                 approvalDate: passes[selectedIndex].approvalDate,
+                vereinId: passes[selectedIndex].vereinId,
                 joinDate: passes[selectedIndex].joinDate
             });
             setShowModal(true);
@@ -122,6 +125,7 @@ const PassList = () => {
                         <th>Geburtsdatum</th>
                         <th>Passnummer</th>
                         <th>Genehmigungsdatum</th>
+                        <th>Verein</th>
                         <th>Beitrittsdatum</th>
                     </tr>
                 </thead>
@@ -134,6 +138,7 @@ const PassList = () => {
                             <td>{formatDate(pass.birthdate)}</td>
                             <td>{pass.passNumber}</td>
                             <td>{formatDate(pass.approvalDate)}</td>
+                            <td>{pass.verein?.name ?? 'null'}</td>
                             <td>{formatDate(pass.joinDate)}</td>
                         </tr>
                     ))}

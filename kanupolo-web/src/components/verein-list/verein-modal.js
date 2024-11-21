@@ -30,7 +30,7 @@ const VereinModal = ({ show, handleClose, handleSave, initialData }) => {
         // Fetch or set initial verbandOptions here
         const fetchVerbandOptions = async () => {
             // Replace with your data fetching logic
-            const options = (await verbandDataService.getAll()).data.items.map(verband => ({
+            const options = (await verbandDataService.getAllWithoutPagination()).data.map(verband => ({
                 value: verband.id,
                 label: verband.name
             }));

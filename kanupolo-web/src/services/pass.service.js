@@ -1,10 +1,18 @@
 import http from "../http-common";
 
 class PassDataService {
-    getAllConditionPagionation(page, size) {
+    getAllPagionation(page, size) {
         return http.get(`/passes?page=${page}&size=${size}`);
     }
 
+    getAllWithoutUser() {
+        return http.get(`/passes/without-user`);
+    }
+
+    getAllWithoutPagination(page, size) {
+        return http.get(`/passes/without-pagination`);
+    }
+    
     get(id) {
         return http.get(`/passes/${id}`);
     }
