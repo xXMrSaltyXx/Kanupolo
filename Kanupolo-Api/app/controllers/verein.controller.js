@@ -52,6 +52,18 @@ exports.findAll = async (req, res) => {
     }
 };
 
+exports.findAllWithoutPagination = async (req, res) => {
+    try {
+        const data = await Verein.findAll();
+        res.send(data);
+    } catch (err) {
+        console.error("Error retrieving vereins:", err); // Log the detailed error
+        res.status(500).send({
+            message: "An error occurred while retrieving vereins."
+        });
+    }
+};
+
 // Find a single Verein with an id
 exports.findOne = (req, res) => {
     const id = req.params.id;

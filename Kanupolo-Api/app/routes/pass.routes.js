@@ -6,14 +6,17 @@ module.exports = app => {
     // Create a new Pass
     router.post("/", passes.create);
 
-    // Retrieve all unconnected Passes
-    router.get("/unconnected", passes.findAllUnconnected);
-
     // Connect a Pass to a User
     router.post("/:id/connectToUser", passes.connectToUser);
 
     // Retrieve all Passes
     router.get("/", passes.findAll);
+
+    // Retrieve all Passes without User
+    router.get("/without-user", passes.findAllWithoutUser);
+
+    // Retrieve all Passes without Pagination
+    router.get("/without-pagination", passes.findAllWithoutPagination);
 
     // Retrieve a single Pass with id
     router.get("/:id", passes.findOne);

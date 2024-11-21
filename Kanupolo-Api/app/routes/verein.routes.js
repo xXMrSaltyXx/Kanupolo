@@ -9,6 +9,8 @@ module.exports = app => {
     // Retrieve all Vereins
     router.get("/", vereins.findAll);
 
+    router.get("/without-pagination", vereins.findAllWithoutPagination);
+
     // Retrieve a single Verein with id
     router.get("/:id", vereins.findOne);
 

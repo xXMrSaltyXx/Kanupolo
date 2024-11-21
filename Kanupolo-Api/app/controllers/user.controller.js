@@ -1,3 +1,4 @@
+const { where } = require('sequelize');
 const db = require('../models');
 const { getPagination, getPagingData } = require('../utils/pagination');
 const Op = require('sequelize').Op;
@@ -56,6 +57,21 @@ exports.findAll = async (req, res) => {
     }
 };
 
+exports.findAllWithoutPagination = async (req, res) => {
+    try {
+        const data = await User.findAll({
+            include: [{ model: db.role, as: 'role', attributes: ['id','name'] }],
+            include: [{ model: db.pass, as: 'pass', attributes: ['id','passNumber'] }]
+        });
+        res.send(data);
+    } catch (err) {
+        console.error("Error retrieving users:", err);
+        res.status(500).send({
+            message: "An error occurred while retrieving users."
+        });
+    }
+};
+
 // Retrieve all Users with their roles and passnumber from the database.
 exports.findAllWithRolesAndPassnumber = async (req, res) => {
     const { page, size } = req.query;
@@ -64,7 +80,6 @@ exports.findAllWithRolesAndPassnumber = async (req, res) => {
 
     try {
         const data = await User.findAndCountAll({
-            attributes: { exclude: ['password'] },
             include: [
                 {
                     model: db.role,
@@ -95,6 +110,17 @@ exports.findOne = (req, res) => {
     const id = req.params.id;
 
     User.findByPk(id, {
+        include: [
+            {
+                model: db.role,
+                as: 'role',
+                attributes: ['name']
+            },
+            {
+                model: db.pass,
+                as: 'pass'
+            }
+        ],
         attributes: { exclude: ['password'] }
     })
         .then(data => {
@@ -141,6 +167,53 @@ exports.update = (req, res) => {
             });
         });
 };
+
+exports.getUserData = (req, res) => {
+    const id = req.params.id;
+
+    User.findByPk(id, {
+        include: [
+            {
+                model: db.role,
+                as: 'role',
+                attributes: ['name']
+            },
+            {
+                model: db.pass,
+                as: 'pass',
+                include: [
+                    {
+                        model: db.verein,
+                        as: 'verein',
+                        attributes: ['name'],
+                        include: [
+                            {
+                                model: db.verband,
+                                as: 'verband',
+                                attributes: ['name']
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        attributes: { exclude: ['password'] }
+    })
+        .then(data => {
+            if (data) {
+                res.send(data);
+            } else {
+                res.status(404).send({
+                    message: `Cannot find User with id=${id}.`
+                });
+            }
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: err.message || "Error retrieving User with id=" + id
+            });
+        });
+}
 
 // Delete a User with the specified id in the request
 exports.delete = (req, res) => {

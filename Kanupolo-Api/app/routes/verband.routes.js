@@ -9,6 +9,8 @@ module.exports = app => {
     // Retrieve all Verbands
     router.get("/", verbands.findAll);
 
+    router.get("/without-pagination", verbands.findAllWithoutPagination);
+
     // Retrieve a single Verband with id
     router.get("/:id", verbands.findOne);
 

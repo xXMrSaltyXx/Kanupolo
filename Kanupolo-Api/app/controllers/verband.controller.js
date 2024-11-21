@@ -45,6 +45,18 @@ exports.findAll = async (req, res) => {
     }
 };
 
+exports.findAllWithoutPagination = async (req, res) => {
+    try {
+        const data = await Verband.findAll();
+        res.send(data);
+    } catch (err) {
+        console.error("Error retrieving verbands:", err); // Log the detailed error
+        res.status(500).send({
+            message: "An error occurred while retrieving verbands."
+        });
+    }
+};
+
 // Find a single Verband with an id
 exports.findOne = (req, res) => {
     const id = req.params.id;

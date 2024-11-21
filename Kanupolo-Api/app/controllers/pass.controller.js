@@ -1,5 +1,6 @@
 const db = require('../models');
 const Pass = db.pass;
+const User = db.user;
 const { getPagination, getPagingData } = require('../utils/pagination');
 const Op = require('sequelize').Op;
 
@@ -94,12 +95,32 @@ exports.findAll = async (req, res) => {
     }
 };
 
-exports.findAllUnconnected = async (req, res) => {
+exports.findAllWithoutUser = async (req, res) => {
     try {
-        const data = await Pass.findAll({ 
-            include: [{ model: db.user, as: 'user', required: false }],
-            where: { '$user.id$': { [Op.is]: null } }
+        const data = await Pass.findAll({
+            include: [{
+                model: User,
+                as: 'user',
+                required: false
+            }],
+            where: {
+                '$user.id$': {
+                    [Op.is]: null
+                }
+            },
         });
+        res.send(data);
+    } catch (err) {
+        console.error("Error retrieving passes:", err);
+        res.status(500).send({
+            message: "An error occurred while retrieving passes."
+        });
+    }
+};
+
+exports.findAllWithoutPagination = async (req, res) => {
+    try {
+        const data = await Pass.findAll({});
         res.send(data);
     } catch (err) {
         console.error("Error retrieving passes:", err); // Log the detailed error
