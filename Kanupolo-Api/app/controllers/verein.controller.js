@@ -1,3 +1,4 @@
+const { where } = require('sequelize');
 const db = require('../models');
 const Verein = db.verein;
 const { getPagination, getPagingData } = require('../utils/pagination');
@@ -5,7 +6,7 @@ const Op = require('sequelize').Op;
 
 // Create and Save a new Verein
 exports.create = (req, res) => {
-    if (!req.body.name) {
+    if (!req.body.name || req.body.name.trim() === "" || !req.body.vereinCode || !req.body.verbandId) {
         res.status(400).send({
             message: "Content can not be empty!"
         });
@@ -13,7 +14,9 @@ exports.create = (req, res) => {
     }
 
     const verein = {
-        name: req.body.name
+        name: req.body.name,
+        vereinCode: req.body.vereinCode,
+        verbandId: req.body.verbandId
     };
 
     Verein.create(verein)
@@ -46,7 +49,12 @@ exports.findAll = async (req, res) => {
     const { limit, offset } = getPagination(page, size);
 
     try {
-        const data = await Verein.findAndCountAll({ where: queryCondition, limit, offset });
+        const data = await Verein.findAndCountAll({
+            include: [{ model: db.verband, as: 'verband', attributes: ['id', 'name'] }],
+            where: queryCondition,
+            limit,
+            offset
+        });
         const response = getPagingData(data, page, limit);
         res.send(response);
     } catch (err) {

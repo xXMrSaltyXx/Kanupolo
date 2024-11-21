@@ -7,16 +7,16 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING
         },
         birthdate: {
-            type: Sequelize.DATE
+            type: Sequelize.DATEONLY
         },
         passNumber: {
             type: Sequelize.STRING
         },
         approvalDate: {
-            type: Sequelize.DATE
+            type: Sequelize.DATEONLY
         },
         joinDate: {
-            type: Sequelize.DATE
+            type: Sequelize.DATEONLY
         }
     });
 

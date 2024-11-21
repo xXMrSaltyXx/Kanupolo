@@ -3,7 +3,6 @@ var router = require("express").Router();
 
 module.exports = app => {
 
-
     // Create a new Role
     router.post("/", roles.create);
 
