@@ -6,6 +6,9 @@ module.exports = app => {
     // Create a new Role
     router.post("/", roles.create);
 
+    // Retrieve all Roles without pagination
+    router.get("/witout-pagination", roles.findAllWithoutPagination);
+
     // Retrieve all Roles
     router.get("/", roles.findAll);
 

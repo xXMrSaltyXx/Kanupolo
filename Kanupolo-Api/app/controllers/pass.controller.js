@@ -74,26 +74,33 @@ exports.connectToUser = (req, res) => {
 
 // Retrieve all Passes from the database.
 exports.findAll = async (req, res) => {
-    const { page, size, condition } = req.query;
-    let queryCondition = {};
-
-    if (condition) {
-        try {
-            queryCondition = JSON.parse(condition);
-        } catch (error) {
-            res.status(400).send({
-                message: "Invalid condition format!"
-            });
-            return;
-        }
-    }
+    const { page, size } = req.query;
 
     const { limit, offset } = getPagination(page, size);
 
     try {
-        const data = await Pass.findAndCountAll({ where: queryCondition, limit, offset });
+        const data = await Pass.findAndCountAll({ 
+            include: [{ model: db.verein, as: 'verein' }],
+            limit, 
+            offset 
+        });
         const response = getPagingData(data, page, limit);
         res.send(response);
+    } catch (err) {
+        console.error("Error retrieving passes:", err); // Log the detailed error
+        res.status(500).send({
+            message: "An error occurred while retrieving passes."
+        });
+    }
+};
+
+exports.findAllUnconnected = async (req, res) => {
+    try {
+        const data = await Pass.findAll({ 
+            include: [{ model: db.user, as: 'user', required: false }],
+            where: { '$user.id$': { [Op.is]: null } }
+        });
+        res.send(data);
     } catch (err) {
         console.error("Error retrieving passes:", err); // Log the detailed error
         res.status(500).send({

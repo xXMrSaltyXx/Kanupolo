@@ -6,6 +6,9 @@ module.exports = app => {
     // Create a new Pass
     router.post("/", passes.create);
 
+    // Retrieve all unconnected Passes
+    router.get("/unconnected", passes.findAllUnconnected);
+
     // Connect a Pass to a User
     router.post("/:id/connectToUser", passes.connectToUser);
 

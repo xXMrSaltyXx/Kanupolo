@@ -29,23 +29,12 @@ exports.create = (req, res) => {
 
 // Retrieve all Verbands from the database.
 exports.findAll = async (req, res) => {
-    const { page, size, condition } = req.query;
-    let queryCondition = {};
-
-    if (condition) {
-        try {
-            queryCondition = JSON.parse(condition);
-        } catch (error) {
-            return res.status(400).send({
-                message: "Invalid condition format!"
-            });
-        }
-    }
+    const { page, size } = req.query;
 
     const { limit, offset } = getPagination(page, size);
 
     try {
-        const data = await Verband.findAndCountAll({ where: queryCondition, limit, offset });
+        const data = await Verband.findAndCountAll({ limit, offset });
         const response = getPagingData(data, page, limit);
         res.send(response);
     } catch (err) {

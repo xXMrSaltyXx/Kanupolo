@@ -32,26 +32,13 @@ exports.create = (req, res) => {
 
 // Retrieve all Vereins from the database.
 exports.findAll = async (req, res) => {
-    const { page, size, condition } = req.query;
-    let queryCondition = {};
-
-    if (condition) {
-        try {
-            queryCondition = JSON.parse(condition);
-        } catch (error) {
-            res.status(400).send({
-                message: "Invalid condition format!"
-            });
-            return;
-        }
-    }
+    const { page, size } = req.query;
 
     const { limit, offset } = getPagination(page, size);
 
     try {
         const data = await Verein.findAndCountAll({
             include: [{ model: db.verband, as: 'verband', attributes: ['id', 'name'] }],
-            where: queryCondition,
             limit,
             offset
         });

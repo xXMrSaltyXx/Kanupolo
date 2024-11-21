@@ -29,24 +29,12 @@ exports.create = (req, res) => {
 
 // Retrieve all Roles from the database.
 exports.findAll = async (req, res) => {
-    const { page, size, condition } = req.query;
-    let queryCondition = {};
-
-    if (condition) {
-        try {
-            queryCondition = JSON.parse(condition);
-        } catch (error) {
-            res.status(400).send({
-                message: "Invalid condition format!"
-            });
-            return;
-        }
-    }
+    const { page, size } = req.query;
 
     const { limit, offset } = getPagination(page, size);
 
     try {
-        const data = await Role.findAndCountAll({ where: queryCondition, limit, offset });
+        const data = await Role.findAndCountAll({ limit, offset });
         const response = getPagingData(data, page, limit);
         res.send(response);
     } catch (err) {
@@ -55,6 +43,19 @@ exports.findAll = async (req, res) => {
             message: "An error occurred while retrieving roles."
         });
     }
+};
+
+// Retrieve all Roles from the database without pagination
+exports.findAllWithoutPagination = (req, res) => {
+    Role.findAll()
+        .then(data => {
+            res.send(data);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: err.message || "An error occurred while retrieving roles."
+            });
+        });
 };
 
 // Find a single Role with an id

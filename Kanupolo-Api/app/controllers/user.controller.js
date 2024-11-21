@@ -35,26 +35,14 @@ exports.create = (req, res) => {
 
 // Retrieve all Users from the database.
 exports.findAll = async (req, res) => {
-    const { page, size, condition } = req.query;
-    let queryCondition = {};
-
-    if (condition) {
-        try {
-            queryCondition = JSON.parse(condition);
-        } catch (error) {
-            res.status(400).send({
-                message: "Invalid condition format!"
-            });
-            return;
-        }
-    }
+    const { page, size } = req.query;
 
     const { limit, offset } = getPagination(page, size);
 
     try {
         const data = await User.findAndCountAll({
-            attributes: { exclude: ['password'] },
-            where: queryCondition,
+            include: [{ model: db.role, as: 'role', attributes: ['id','name'] }],
+            include: [{ model: db.pass, as: 'pass', attributes: ['id','passNumber'] }],
             limit,
             offset
         });
@@ -70,19 +58,7 @@ exports.findAll = async (req, res) => {
 
 // Retrieve all Users with their roles and passnumber from the database.
 exports.findAllWithRolesAndPassnumber = async (req, res) => {
-    const { page, size, condition } = req.query;
-    let queryCondition = {};
-
-    if (condition) {
-        try {
-            queryCondition = JSON.parse(condition);
-        } catch (error) {
-            res.status(400).send({
-                message: "Invalid condition format!"
-            });
-            return;
-        }
-    }
+    const { page, size } = req.query;
 
     const { limit, offset } = getPagination(page, size);
 
@@ -101,7 +77,6 @@ exports.findAllWithRolesAndPassnumber = async (req, res) => {
                     attributes: ['passNumber']
                 }
             ],
-            where: queryCondition,
             limit,
             offset
         });
@@ -141,6 +116,10 @@ exports.findOne = (req, res) => {
 // Update a User by the id in the request
 exports.update = (req, res) => {
     const id = req.params.id;
+
+    if (req.body.password) {
+        req.body.password = crypto.createHash('sha256').update(req.body.password).digest('hex');
+    }
 
     User.update(req.body, {
         where: { id: id }
