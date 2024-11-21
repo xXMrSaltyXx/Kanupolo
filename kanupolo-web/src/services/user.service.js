@@ -5,8 +5,8 @@ class UserDataService {
         return http.get(`/users?page=${page}&size=${size}&condition=${condition}`);
     }
 
-    getAllWithRoleAndPass(page, size, condition) {
-        return http.get(`/users/role-pass?page=${page}&size=${size}&condition=${condition}`);
+    getAllWithRoleAndPass(page, size) {
+        return http.get(`/users/role-pass?page=${page}&size=${size}`);
     }
 
     get(id) {

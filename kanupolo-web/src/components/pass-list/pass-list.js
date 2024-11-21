@@ -1,11 +1,11 @@
 import React from 'react';
-import VereinDataService from "../../services/verein.service";
+import PassDataService from "../../services/pass.service";
 import { useState, useEffect } from 'react';
-import VereinModal from "./verein-modal";
+import PassModal from "./pass-modal";
 import { Table, Button, Form } from 'react-bootstrap';
 
-const VereinList = () => {
-    const [vereins, setVereins] = useState([]);
+const PassList = () => {
+    const [passes, setPasses] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState(-1);
 
     const [page, setPage] = useState(0);
@@ -14,15 +14,18 @@ const VereinList = () => {
     const [showModal, setShowModal] = useState(false);
     const [modalType, setModalType] = useState('');
     const [editFields, setEditFields] = useState({ 
-        name: '' ,
-        vereinCode: '',
-        verbandId: ''
+        firstname: '',
+        lastname: '',
+        birthdate: '',
+        passNumber: '',
+        approvalDate: '',
+        joinDate: ''
     });
 
-    const retrieveVereins = () => {
-        VereinDataService.getAllConditionPagionation(page, size)
+    const retrievePasses = () => {
+        PassDataService.getAllConditionPagionation(page, size)
             .then(response => {
-                setVereins(response.data.items);
+                setPasses(response.data.items);
             })
             .catch(e => {
                 console.log(e);
@@ -30,36 +33,42 @@ const VereinList = () => {
     }
 
     useEffect(() => {
-        retrieveVereins();
+        retrievePasses();
     }, [page, size]);
 
-    const handleAddVerein = () => {
+    const handleAddPass = () => {
         setModalType('create');
         setEditFields({ 
-            name: '' ,
-            vereinCode: '',
-            verbandId: ''
+            firstname: '',
+            lastname: '',
+            birthdate: '',
+            passNumber: '',
+            approvalDate: '',
+            joinDate: ''
         });
         setShowModal(true);
     };
-
-    const handleEditVerein = () => {
+    
+    const handleEditPass = () => {
         if (selectedIndex >= 0) {
             setModalType('edit');
             setEditFields({ 
-                name: vereins[selectedIndex].name,
-                vereinCode: vereins[selectedIndex].vereinCode,
-                verbandId: vereins[selectedIndex].verbandId
+                firstname: passes[selectedIndex].firstname,
+                lastname: passes[selectedIndex].lastname,
+                birthdate: passes[selectedIndex].birthdate,
+                passNumber: passes[selectedIndex].passNumber,
+                approvalDate: passes[selectedIndex].approvalDate,
+                joinDate: passes[selectedIndex].joinDate
             });
             setShowModal(true);
         }
     };
 
-    const handleDeleteVerein = () => {
+    const handleDeletePass = () => {
         if (selectedIndex >= 0) {
-            VereinDataService.delete(vereins[selectedIndex].id)
+            PassDataService.delete(passes[selectedIndex].id)
                 .then(response => {
-                    retrieveVereins();
+                    retrievePasses();
                 })
                 .catch(e => {
                     console.log(e);
@@ -69,18 +78,18 @@ const VereinList = () => {
 
     const handleSave = (data) => {
         if (modalType === 'create') {
-            VereinDataService.create(data)
+            PassDataService.create(data)
                 .then(response => {
-                    retrieveVereins();
+                    retrievePasses();
                     setShowModal(false);
                 })
                 .catch(e => {
                     console.log(e);
                 });
         } else if (modalType === 'edit') {
-            VereinDataService.update(vereins[selectedIndex].id, data)
+            PassDataService.update(passes[selectedIndex].id, data)
                 .then(response => {
-                    retrieveVereins();
+                    retrievePasses();
                     setShowModal(false);
                 })
                 .catch(e => {
@@ -89,32 +98,43 @@ const VereinList = () => {
         }
     };
 
+    const formatDate = (dateString) => {
+        const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+        return new Date(dateString).toLocaleDateString('de-DE', options);
+    };
+
     return (
         <>
-            <h4>Vereins Liste</h4>
+            <h4>Pass Liste</h4>
 
             <div className="form-group" style={{display: "flex"}}>
-                <Button onClick={handleAddVerein} variant="primary">Neuer Verein</Button>
-                <Button onClick={handleEditVerein} variant="warning">Bearbeiten</Button>
-                <Button onClick={handleDeleteVerein} variant="danger">Löschen</Button>
-            </div>
+                <Button onClick={handleAddPass} variant="primary">Neuer Pass</Button>
+                <Button onClick={handleEditPass} variant="warning">Bearbeiten</Button>
+                <Button onClick={handleDeletePass} variant="danger">Löschen</Button>
+            </div> 
 
             <Table form-group striped bordered hover>
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Name</th>
-                        <th>Vereins-Code</th>
-                        <th>Verband</th>
+                        <th>Vorname</th>
+                        <th>Nachname</th>
+                        <th>Geburtsdatum</th>
+                        <th>Passnummer</th>
+                        <th>Genehmigungsdatum</th>
+                        <th>Beitrittsdatum</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {vereins.map((verein, index) => (
+                    {passes.map((pass, index) => (
                         <tr key={index} onClick={() => selectedIndex == index ? setSelectedIndex(-1) : setSelectedIndex(index)} className={selectedIndex === index ? "table-selected" : ""}>
                             <td>{index + 1}</td>
-                            <td>{verein.name}</td>
-                            <td>{verein.vereinCode}</td>
-                            <td>{verein.verband.name ?? null}</td>
+                            <td>{pass.firstname}</td>
+                            <td>{pass.lastname}</td>
+                            <td>{formatDate(pass.birthdate)}</td>
+                            <td>{pass.passNumber}</td>
+                            <td>{formatDate(pass.approvalDate)}</td>
+                            <td>{formatDate(pass.joinDate)}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -141,7 +161,7 @@ const VereinList = () => {
                 </Form.Group>
             </div>
 
-            <VereinModal
+            <PassModal
                 show={showModal}
                 handleClose={() => setShowModal(false)}
                 handleSave={handleSave}
@@ -151,4 +171,4 @@ const VereinList = () => {
     );
 };
 
-export default VereinList;
+export default PassList;

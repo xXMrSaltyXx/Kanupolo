@@ -1,25 +1,23 @@
-import VerbandDataService from "../../services/verband.service";
-import { React, useState, useEffect } from 'react';
-import './verband-list.css';
-import VerbandModal from "./verband-modal";
+import RoleDataService from "../../services/role.service";
+import { useState, useEffect } from 'react';
+import { Table, Button, Form } from 'react-bootstrap';
+import RoleModal from "./role-modal";
 
-import { Table, Button, Collapse, Form } from 'react-bootstrap';
-
-const VerbandList = () => {
-    const [verbands, setVerbands] = useState([]);
+const RoleList = () => {
+    const [roles, setRoles] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState(-1);
 
-    const [page, setPage] = useState(0); 
-    const [size, setSize] = useState(10); 
+    const [page, setPage] = useState(0);
+    const [size, setSize] = useState(10);
 
     const [showModal, setShowModal] = useState(false);
     const [modalType, setModalType] = useState('');
     const [editFields, setEditFields] = useState({ name: '' });
 
-    const retrieveVerbands = () => {
-        VerbandDataService.getAllConditionPagionation(page, size)
+    const retrieveRoles = () => {
+        RoleDataService.getAllConditionPagionation(page, size)
             .then(response => {
-                setVerbands(response.data.items);
+                setRoles(response.data.items);
             })
             .catch(e => {
                 console.log(e);
@@ -27,28 +25,28 @@ const VerbandList = () => {
     }
 
     useEffect(() => {
-        retrieveVerbands();
+        retrieveRoles();
     }, [page, size]);
 
-    const handleAddVerband = () => {
+    const handleAddRole = () => {
         setModalType('create');
         setEditFields({ name: '' });
         setShowModal(true);
     };
 
-    const handleEditVerband = (index) => {
+    const handleEditRole = () => {
         if (selectedIndex >= 0) {
             setModalType('edit');
-            setEditFields({ name: verbands[selectedIndex].name });
+            setEditFields({ name: roles[selectedIndex].name });
             setShowModal(true);
         }
     };
 
-    const handleDeleteVerband = (index) => {
+    const handleDeleteRole = () => {
         if (selectedIndex >= 0) {
-            VerbandDataService.delete(verbands[selectedIndex].id)
+            RoleDataService.delete(roles[selectedIndex].id)
                 .then(response => {
-                    retrieveVerbands();
+                    retrieveRoles();
                 })
                 .catch(e => {
                     console.log(e);
@@ -58,18 +56,18 @@ const VerbandList = () => {
 
     const handleSave = () => {
         if (modalType === 'create') {
-            VerbandDataService.create(editFields)
+            RoleDataService.create(editFields)
                 .then(response => {
-                    retrieveVerbands();
+                    retrieveRoles();
                     setShowModal(false);
                 })
                 .catch(e => {
                     console.log(e);
                 });
         } else if (modalType === 'edit') {
-            VerbandDataService.update(verbands[selectedIndex].id, editFields)
+            RoleDataService.update(roles[selectedIndex].id, editFields)
                 .then(response => {
-                    retrieveVerbands();
+                    retrieveRoles();
                     setShowModal(false);
                 })
                 .catch(e => {
@@ -80,15 +78,15 @@ const VerbandList = () => {
 
     return (
         <>
-            <h4>Verbands Liste</h4>
+            <h4>Rollen Liste</h4>
 
-            <div className="form-group" style={{display: "flex"}}> 
-                <Button onClick={handleAddVerband} variant="primary">Neuer Verband</Button>
-                <Button onClick={handleEditVerband} variant="warning">Bearbeiten</Button>
-                <Button onClick={handleDeleteVerband} variant="danger">Löschen</Button>
+            <div className="form-group" style={{ display: "flex" }}>
+                <Button onClick={handleAddRole} variant="primary">Neue Rolle</Button>
+                <Button onClick={handleEditRole} variant="warning">Bearbeiten</Button>
+                <Button onClick={handleDeleteRole} variant="danger">Löschen</Button>
             </div>
 
-            <Table form-group striped bordered hover>
+            <Table striped bordered hover>
                 <thead>
                     <tr>
                         <th>#</th>
@@ -96,10 +94,10 @@ const VerbandList = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {verbands.map((verband, index) => (
-                        <tr key={index} onClick={() => selectedIndex == index ? setSelectedIndex(-1) : setSelectedIndex(index)} className={selectedIndex === index ? "table-selected" : ""}>
+                    {roles.map((role, index) => (
+                        <tr key={index} onClick={() => selectedIndex === index ? setSelectedIndex(-1) : setSelectedIndex(index)} className={selectedIndex === index ? "table-selected" : ""}>
                             <td>{index + 1}</td>
-                            <td>{verband.name}</td>
+                            <td>{role.name}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -125,8 +123,8 @@ const VerbandList = () => {
                     />
                 </Form.Group>
             </div>
-            
-            <VerbandModal
+
+            <RoleModal
                 show={showModal}
                 handleClose={() => setShowModal(false)}
                 handleSave={handleSave}
@@ -137,4 +135,4 @@ const VerbandList = () => {
     );
 };
 
-export default VerbandList;
+export default RoleList;

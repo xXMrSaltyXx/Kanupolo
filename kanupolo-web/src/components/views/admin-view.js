@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { Nav } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
-import UserList from '../user-list';
+import UserList from '../user-list/user-list';
 import VereinList from '../verein-list/verein-list';
 import VerbandList from '../verband-list/verband-list';
-import PassList from '../pass-list';
+import PassList from '../pass-list/pass-list';
+import RoleList from '../role-list/role-list';
 
 class AdminView extends Component {
     constructor(props) {
@@ -26,6 +27,9 @@ class AdminView extends Component {
                         <Nav.Link eventKey="users">Nutzer</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
+                        <Nav.Link eventKey="roles">Rollen</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
                         <Nav.Link eventKey="passes">Pässe</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
@@ -38,6 +42,7 @@ class AdminView extends Component {
                 
                 <div className="tab-content mt-3">
                     {this.state.activeTab === 'users' && <UserList />}
+                    {this.state.activeTab === 'roles' && <RoleList />}
                     {this.state.activeTab === 'passes' && <PassList />}
                     {this.state.activeTab === 'vereins' && <VereinList />}
                     {this.state.activeTab === 'verbands' && <VerbandList />}

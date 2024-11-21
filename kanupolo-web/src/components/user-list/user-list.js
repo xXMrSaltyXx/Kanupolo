@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table } from 'react-bootstrap';
-import UserDataService from '../services/user.service';
+import UserDataService from '../../services/user.service';
 
 const UserList = () => {
 
@@ -34,7 +34,6 @@ const UserList = () => {
                 </thead>
                 <tbody>
                     {users.map((user, index) => {
-                        console.log(user);
                         return (
                             <tr key={index}>
                                 <td>{user.username}</td>
