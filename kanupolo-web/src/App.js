@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Link, Route, Routes } from 'react-router-dom';
 import { Nav, TabContent } from 'react-bootstrap';
-import AppView from './components/views/app-view';
 import UserView from './components/views/user-view/user-view';
 import VereinView from './components/views/verein-view/verein-view';
 import VerbandView from './components/views/verband-view/verband-view';
@@ -29,7 +28,7 @@ class App extends Component {
 
         <TabContent className='app-content'>
           <Routes>
-            <Route path="/" element={<AppView/>} />
+            <Route path="/" element={<UserView/>} />
             <Route path="/user" element={<UserView/>} />
             <Route path="/verein" element={<VereinView/>} />
             <Route path="/verband" element={<VerbandView/>} />
