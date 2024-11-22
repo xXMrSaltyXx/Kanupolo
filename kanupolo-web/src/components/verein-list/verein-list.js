@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import VereinModal from "./verein-modal";
 import { Table, Button, Form } from 'react-bootstrap';
 
-const VereinList = () => {
+const VereinList = ({ verbandId }) => {
     const [vereins, setVereins] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState(-1);
 
@@ -19,26 +19,37 @@ const VereinList = () => {
         verbandId: ''
     });
 
-    const retrieveVereins = () => {
-        VereinDataService.getAllPagionation(page, size)
-            .then(response => {
-                setVereins(response.data.items);
-            })
-            .catch(e => {
-                console.log(e);
-            });
+    const retrieveVereins = (verbandId) => {
+        if (verbandId) {
+            VereinDataService.getByVerbandId(verbandId)
+                .then(response => {
+                    setVereins(response.data);
+                })
+                .catch(e => {
+                    console.log(e);
+                });
+        } else {
+            console.log(verbandId);
+            VereinDataService.getAllPagionation(page, size)
+                .then(response => {
+                    setVereins(response.data.items);
+                })
+                .catch(e => {
+                    console.log(e);
+                });
+        }
     }
 
     useEffect(() => {
-        retrieveVereins();
-    }, [page, size]);
+        retrieveVereins(verbandId);
+    }, [page, size, verbandId]);
 
     const handleAddVerein = () => {
         setModalType('create');
         setEditFields({ 
             name: '' ,
             vereinCode: '',
-            verbandId: ''
+            verbandId: verbandId ?? null
         });
         setShowModal(true);
     };
@@ -59,7 +70,7 @@ const VereinList = () => {
         if (selectedIndex >= 0) {
             VereinDataService.delete(vereins[selectedIndex].id)
                 .then(response => {
-                    retrieveVereins();
+                    retrieveVereins(verbandId);
                 })
                 .catch(e => {
                     console.log(e);
@@ -71,7 +82,7 @@ const VereinList = () => {
         if (modalType === 'create') {
             VereinDataService.create(data)
                 .then(response => {
-                    retrieveVereins();
+                    retrieveVereins(verbandId);
                     setShowModal(false);
                 })
                 .catch(e => {
@@ -80,7 +91,7 @@ const VereinList = () => {
         } else if (modalType === 'edit') {
             VereinDataService.update(vereins[selectedIndex].id, data)
                 .then(response => {
-                    retrieveVereins();
+                    retrieveVereins(verbandId);
                     setShowModal(false);
                 })
                 .catch(e => {
@@ -114,7 +125,7 @@ const VereinList = () => {
                             <td>{index + 1}</td>
                             <td>{verein.name}</td>
                             <td>{verein.vereinCode}</td>
-                            <td>{verein.verband.name ?? null}</td>
+                            <td>{verein.verband?.name ?? null}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -142,6 +153,7 @@ const VereinList = () => {
             </div>
 
             <VereinModal
+                restricted={verbandId ? true : false}
                 show={showModal}
                 handleClose={() => setShowModal(false)}
                 handleSave={handleSave}

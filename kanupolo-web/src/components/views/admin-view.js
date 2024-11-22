@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Nav } from 'react-bootstrap';
+import { React, Component } from 'react';
+import { Nav, TabContent } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 import UserList from '../user-list/user-list';
 import VereinList from '../verein-list/verein-list';
@@ -40,13 +40,13 @@ class AdminView extends Component {
                     </Nav.Item>
                 </Nav>
                 
-                <div className="tab-content mt-3">
+                <TabContent>
                     {this.state.activeTab === 'users' && <UserList />}
                     {this.state.activeTab === 'roles' && <RoleList />}
                     {this.state.activeTab === 'passes' && <PassList />}
                     {this.state.activeTab === 'vereins' && <VereinList />}
                     {this.state.activeTab === 'verbands' && <VerbandList />}
-                </div>
+                </TabContent>
             </div>  
         );
     }

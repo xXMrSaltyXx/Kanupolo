@@ -1,0 +1,6 @@
+.verein-view {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 5px 0;
+}

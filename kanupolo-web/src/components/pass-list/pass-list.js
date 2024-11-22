@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import PassModal from "./pass-modal";
 import { Table, Button, Form } from 'react-bootstrap';
 
-const PassList = () => {
+const PassList = ({ vereinId }) => {
     const [passes, setPasses] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState(-1);
 
@@ -23,19 +23,29 @@ const PassList = () => {
         joinDate: ''
     });
 
-    const retrievePasses = () => {
-        PassDataService.getAllPagionation(page, size)
-            .then(response => {
-                setPasses(response.data.items);
-            })
-            .catch(e => {
-                console.log(e);
-            });
+    const retrievePasses = (vereinId) => {
+        if (vereinId) {
+            PassDataService.getByVereinId(vereinId)
+                .then(response => {
+                    setPasses(response.data);
+                })
+                .catch(e => {
+                    console.log(e);
+                });
+        } else {
+            PassDataService.getAllPagionation(page, size)
+                .then(response => {
+                    setPasses(response.data.items);
+                })
+                .catch(e => {
+                    console.log(e);
+                });
+        }
     }
 
     useEffect(() => {
-        retrievePasses();
-    }, [page, size]);
+        retrievePasses(vereinId);
+    }, [page, size, vereinId]);
 
     const handleAddPass = () => {
         setModalType('create');
@@ -45,7 +55,7 @@ const PassList = () => {
             birthdate: '',
             passNumber: '',
             approvalDate: '',
-            vereinId: null,
+            vereinId: vereinId ?? null,
             joinDate: ''
         });
         setShowModal(true);
@@ -71,7 +81,7 @@ const PassList = () => {
         if (selectedIndex >= 0) {
             PassDataService.delete(passes[selectedIndex].id)
                 .then(response => {
-                    retrievePasses();
+                    retrievePasses(vereinId);
                 })
                 .catch(e => {
                     console.log(e);
@@ -83,7 +93,7 @@ const PassList = () => {
         if (modalType === 'create') {
             PassDataService.create(data)
                 .then(response => {
-                    retrievePasses();
+                    retrievePasses(vereinId);
                     setShowModal(false);
                 })
                 .catch(e => {
@@ -92,7 +102,7 @@ const PassList = () => {
         } else if (modalType === 'edit') {
             PassDataService.update(passes[selectedIndex].id, data)
                 .then(response => {
-                    retrievePasses();
+                    retrievePasses(vereinId);
                     setShowModal(false);
                 })
                 .catch(e => {
@@ -167,6 +177,7 @@ const PassList = () => {
             </div>
 
             <PassModal
+                restricted={vereinId ? true : false}
                 show={showModal}
                 handleClose={() => setShowModal(false)}
                 handleSave={handleSave}

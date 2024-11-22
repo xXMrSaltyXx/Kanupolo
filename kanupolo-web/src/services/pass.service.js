@@ -12,6 +12,10 @@ class PassDataService {
     getAllWithoutPagination(page, size) {
         return http.get(`/passes/without-pagination`);
     }
+
+    getByVereinId(vereinId) {
+        return http.get(`/passes/verein/${vereinId}`);
+    }
     
     get(id) {
         return http.get(`/passes/${id}`);

@@ -181,6 +181,7 @@ class UserView extends Component {
                                 <Col sm="10">
                                     <Form.Control
                                         disabled
+                                        readOnly
                                         type="text"
                                         value={passFields.passNumber}
                                     />
@@ -191,6 +192,7 @@ class UserView extends Component {
                                 <Col sm="10">
                                     <Form.Control
                                         disabled
+                                        readOnly
                                         type="date"
                                         value={passFields.approvalDate}
                                     />
@@ -201,6 +203,7 @@ class UserView extends Component {
                                 <Col sm="10">
                                     <Form.Control
                                         disabled
+                                        readOnly
                                         type="date"
                                         value={passFields.joinDate}
                                     />
@@ -211,6 +214,7 @@ class UserView extends Component {
                                 <Col sm="10">
                                     <Form.Control
                                         disabled
+                                        readOnly
                                         type="text"
                                         value={vereinName}
                                     />
@@ -221,6 +225,7 @@ class UserView extends Component {
                                 <Col sm="10">
                                     <Form.Control
                                         disabled
+                                        readOnly
                                         type="text"
                                         value={verbandName}
                                     />

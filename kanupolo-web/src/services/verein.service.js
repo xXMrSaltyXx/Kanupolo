@@ -9,6 +9,10 @@ class VereinDataService {
         return http.get("/vereins/without-pagination");
     }
 
+    getByVerbandId(verbandId) {
+        return http.get(`/vereins/verband/${verbandId}`);
+    }
+
     get(id) {
         return http.get(`/vereins/${id}`);
     }

@@ -3,7 +3,7 @@ import { Modal, Form, Button } from 'react-bootstrap';
 import Select from 'react-select';
 import VereinDataService from '../../services/verein.service';
 
-const PassModal = ({ show, handleClose, handleSave, initialData }) => {
+const PassModal = ({ show, handleClose, handleSave, initialData, restricted = false }) => {
     const [formFields, setFormFields] = useState({
         firstname: '',
         lastname: '',
@@ -115,6 +115,7 @@ const PassModal = ({ show, handleClose, handleSave, initialData }) => {
                     <Form.Group controlId="formVerein">
                         <Form.Label>Verein</Form.Label>
                         <Select
+                            isDisabled={restricted}
                             value={vereinOptions.find(option => option.value === formFields.vereinId)}
                             options={vereinOptions}
                             onChange={handleVereinChange}

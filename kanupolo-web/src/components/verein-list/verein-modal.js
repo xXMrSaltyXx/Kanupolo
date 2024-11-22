@@ -4,7 +4,7 @@ import Select from 'react-select';
 import verbandDataService from '../../services/verband.service';
 
 
-const VereinModal = ({ show, handleClose, handleSave, initialData }) => {
+const VereinModal = ({ show, handleClose, handleSave, initialData, restricted }) => {
     const [formFields, setFormFields] = useState({
         name: '',
         vereinCode: '',
@@ -79,6 +79,7 @@ const VereinModal = ({ show, handleClose, handleSave, initialData }) => {
                     <Form.Group controlId="formVerband">
                         <Form.Label>Verband</Form.Label>
                         <Select
+                            isDisabled={restricted}
                             value={verbandOptions.find(option => option.value === formFields.verbandId)}
                             options={verbandOptions}
                             onChange={handleVerbandChange}

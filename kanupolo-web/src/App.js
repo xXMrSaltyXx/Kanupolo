@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { Link, Route, Routes } from 'react-router-dom';
-import { Nav } from 'react-bootstrap';
+import { Nav, TabContent } from 'react-bootstrap';
 import AppView from './components/views/app-view';
 import UserView from './components/views/user-view/user-view';
-import VereinView from './components/views/verein-view';
-import VerbandView from './components/views/verband-view';
+import VereinView from './components/views/verein-view/verein-view';
+import VerbandView from './components/views/verband-view/verband-view';
 import AdminView from './components/views/admin-view';
 import './App.css';
-import 'bootstrap/dist/css/bootstrap.css';
 
 class App extends Component {
   render() {
@@ -28,7 +27,7 @@ class App extends Component {
           </Nav.Item>
         </Nav>
 
-        <div className="container mt-3">
+        <TabContent className='app-content'>
           <Routes>
             <Route path="/" element={<AppView/>} />
             <Route path="/user" element={<UserView/>} />
@@ -36,7 +35,7 @@ class App extends Component {
             <Route path="/verband" element={<VerbandView/>} />
             <Route path="/admin" element={<AdminView/>} />
           </Routes>
-        </div>
+        </TabContent>
       </div>
     );
   }

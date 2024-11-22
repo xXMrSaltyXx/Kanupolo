@@ -24,7 +24,6 @@ const UserList = () => {
     const retrieveUsers = () => {
         UserDataService.getAllWithRoleAndPass(page, size)
             .then(response => {
-                console.log(response.data);
                 setUsers(response.data.items);
             })
             .catch(e => {
