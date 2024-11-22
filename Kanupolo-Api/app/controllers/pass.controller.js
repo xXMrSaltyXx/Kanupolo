@@ -130,6 +130,28 @@ exports.findAllWithoutPagination = async (req, res) => {
     }
 };
 
+exports.findAllByVerein = async (req, res) => {
+    const vereinId = req.params.id;
+
+    try {
+        const data = await Pass.findAll({
+            include: [{
+                model: db.verein,
+                as: 'verein',
+                where: {
+                    id: vereinId
+                }
+            }]
+        });
+        res.send(data);
+    } catch (err) {
+        console.error("Error retrieving passes:", err); // Log the detailed error
+        res.status(500).send({
+            message: "An error occurred while retrieving passes."
+        });
+    }
+};
+
 // Find a single Pass with an id
 exports.findOne = (req, res) => {
     const id = req.params.id;

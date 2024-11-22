@@ -18,6 +18,8 @@ module.exports = app => {
     // Retrieve all Passes without Pagination
     router.get("/without-pagination", passes.findAllWithoutPagination);
 
+    router.get("/verein/:id", passes.findAllByVerein);
+
     // Retrieve a single Pass with id
     router.get("/:id", passes.findOne);
 
